@@ -1,0 +1,32 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { getProductosEnStock, getTalleristasActivos } from '../lib/firebase';
+
+const productos = await getProductosEnStock();
+const talleristas = await getTalleristasActivos();
+
+const talleristasMap = new Map(talleristas.map(t => [t.id, t]));
+---
+
+<Layout title="Aparador Virtual P2P | Talleres Tlaxcala">
+  <main class="container">
+    <h1>Aparador Virtual / Catálogo P2P</h1>
+    <p>Adquiere productos y kits didácticos directamente con los instructores sin comisiones ni intermediarios.</p>
+
+    <div class="grid-productos">
+      {productos.map(producto => {
+        const tallerista = talleristasMap.get(producto.id_tallerista);
+        if (!tallerista) return null;
+        
+        return (
+          <ProductCard 
+            producto={producto} 
+            whatsappVentas={tallerista.whatsapp_ventas} 
+            nombreTallerista={tallerista.nombre}
+          />
+        );
+      })}
+    </div>
+  </main>
+</Layout>

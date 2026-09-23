@@ -1,0 +1,68 @@
+---
+import type { Producto } from '../lib/firebase';
+
+interface Props {
+  producto: Producto;
+  whatsappVentas: string;
+  nombreTallerista: string;
+}
+
+const { producto, whatsappVentas, nombreTallerista } = Astro.props;
+
+// Construcción del mensaje predefinido para WhatsApp
+const mensajeEncoded = encodeURIComponent(
+  `Hola ${nombreTallerista}, vi tu producto "${producto.titulo}" en el catálogo de Plataforma Talleres Tlaxcala y me interesa adquirirlo.`
+);
+
+const whatsappLink = `https://wa.me/${whatsappVentas.replace(/[^0-9+]/g, '')}?text=${mensajeEncoded}`;
+---
+
+<div class="product-card">
+  <img 
+    src={producto.imagen_url} 
+    alt={producto.titulo} 
+    loading="lazy" 
+    class="product-image" 
+  />
+  <div class="product-details">
+    <h3>{producto.titulo}</h3>
+    <p class="instructor">Por: {nombreTallerista}</p>
+    <p class="description">{producto.descripcion}</p>
+    <div class="price-action">
+      <span class="price">${producto.precio} MXN</span>
+      <a href={whatsappLink} target="_blank" rel="noopener noreferrer" class="btn-whatsapp">
+        Comprar por WhatsApp
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .product-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #ffffff;
+  }
+  .product-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  .product-details {
+    padding: 1rem;
+  }
+  .instructor {
+    font-size: 0.875rem;
+    color: #64748b;
+  }
+  .btn-whatsapp {
+    display: inline-block;
+    background-color: #25d366;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+  }
+</style>
