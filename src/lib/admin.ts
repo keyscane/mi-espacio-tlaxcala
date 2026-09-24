@@ -48,7 +48,8 @@ export async function actualizarPerfilTallerista(
   const ref = doc(db, 'talleristas', uid);
   await setDoc(ref, {
     ...data,
-    whatsapp_ventas: data.whatsapp_ventas.trim()
+    whatsapp_ventas: data.whatsapp_ventas.trim(),
+    activo: true
   }, { merge: true });
 
   await dispararBuildHook();
