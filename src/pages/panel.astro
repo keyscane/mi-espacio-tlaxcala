@@ -3,95 +3,128 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout title="Panel de Instructor | Talleres Tlaxcala">
-  <main class="max-w-4xl mx-auto p-6 my-10">
-    <!-- Encabezado y Saludo -->
-    <div class="flex justify-between items-center mb-8 border-b pb-4">
-      <div>
-        <h1 class="text-2xl font-bold text-gray-800">Panel de Control</h1>
-        <p id="saludo-user" class="text-gray-600 text-sm">Cargando sesión...</p>
+  <!-- Pasamos las variables de entorno al HTML como data attributes -->
+  <main 
+    id="main-container"
+    data-cloud={import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME}
+    data-preset={import.meta.env.PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+    class="max-w-4xl mx-auto p-6 my-10"
+  >
+
+    <!-- ========================================== -->
+    <!-- ESTADO 1: FORMULARIO DE ACCESO (LOGIN) -->
+    <!-- ========================================== -->
+    <section id="seccion-login" class="hidden max-w-md mx-auto bg-white p-8 rounded-xl shadow-sm border border-gray-100 mt-10">
+      <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Acceso a Instructores</h2>
+      <form id="form-login" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
+          <input type="email" id="login-email" required class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+          <input type="password" id="login-password" required class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
+        </div>
+        <p id="msg-login-error" class="text-red-500 text-sm hidden"></p>
+        <button type="submit" id="btn-login" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-lg transition-colors">
+          Ingresar al Panel
+        </button>
+      </form>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- ESTADO 2: DASHBOARD DEL INSTRUCTOR -->
+    <!-- ========================================== -->
+    <div id="seccion-dashboard" class="hidden">
+      <!-- Encabezado y Saludo -->
+      <div class="flex justify-between items-center mb-8 border-b pb-4">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-800">Panel de Control</h1>
+          <p id="saludo-user" class="text-gray-600 text-sm">Cargando sesión...</p>
+        </div>
+        <button id="btn-logout" class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg transition-colors">
+          Cerrar Sesión
+        </button>
       </div>
-      <button id="btn-logout" class="hidden text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg transition-colors">
-        Cerrar Sesión
-      </button>
+
+      <!-- SECCIÓN 1: Formulario de Perfil -->
+      <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
+        <h2 class="text-xl font-bold text-gray-800 mb-1">Mi Perfil y Contacto P2P</h2>
+        <p class="text-sm text-gray-500 mb-4">Esta información es pública y permite que los alumnos te contacten directamente por WhatsApp.</p>
+
+        <div id="msg-perfil" class="hidden p-3 rounded-lg text-sm mb-4"></div>
+
+        <form id="form-perfil" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre o Firma Comercial</label>
+            <input type="text" id="perfil-nombre" required class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Ej. Taller Artesanal Las Noas" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Semblanza / Biografía corta</label>
+            <textarea id="perfil-bio" rows="2" class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Breve descripción de tu trabajo o proyecto..."></textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">WhatsApp de Ventas (10 dígitos)</label>
+            <input type="tel" id="perfil-whatsapp" required class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="2461234567" />
+          </div>
+
+          <button type="submit" id="btn-guardar-perfil" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+            Guardar Perfil
+          </button>
+        </form>
+      </section>
+
+      <!-- SECCIÓN 2: Subir Nuevo Producto -->
+      <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
+        <h2 class="text-xl font-bold text-gray-800 mb-1">Subir Producto al Aparador</h2>
+        <p class="text-sm text-gray-500 mb-4">Publica kits, materiales o herramientas didácticas.</p>
+
+        <div id="msg-producto" class="hidden p-3 rounded-lg text-sm mb-4"></div>
+
+        <form id="form-producto" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Título del Producto</label>
+              <input type="text" id="prod-titulo" required class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Ej. Kit Inicio Masa Madre" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Precio (MXN)</label>
+              <input type="number" id="prod-precio" required min="1" step="0.5" class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="250" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+            <textarea id="prod-descripcion" rows="2" required class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Detalla qué incluye el kit o producto..."></textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Imagen del Producto</label>
+            <input type="file" id="prod-imagen" accept="image/*" required class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100" />
+          </div>
+
+          <button type="submit" id="btn-guardar-producto" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+            Publicar Producto
+          </button>
+        </form>
+      </section>
+
+      <!-- SECCIÓN 3: Mis Productos Publicados -->
+      <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Mis Productos Publicados</h2>
+        <div id="lista-mis-productos" class="space-y-3">
+          <p class="text-gray-400 text-sm">Cargando tus productos...</p>
+        </div>
+      </section>
     </div>
-
-    <!-- SECCIÓN 1: Formulario de Perfil -->
-    <section id="seccion-perfil" class="hidden bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
-      <h2 class="text-xl font-bold text-gray-800 mb-1">Mi Perfil y Contacto P2P</h2>
-      <p class="text-sm text-gray-500 mb-4">Esta información es pública y permite que los alumnos te contacten directamente por WhatsApp.</p>
-
-      <div id="msg-perfil" class="hidden p-3 rounded-lg text-sm mb-4"></div>
-
-      <form id="form-perfil" class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Nombre o Firma Comercial</label>
-          <input type="text" id="perfil-nombre" required class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Ej. Taller Artesanal Las Noas" />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Semblanza / Biografía corta</label>
-          <textarea id="perfil-bio" rows="2" class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Breve descripción de tu trabajo o proyecto..."></textarea>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">WhatsApp de Ventas (10 dígitos)</label>
-          <input type="tel" id="perfil-whatsapp" required class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="2461234567" />
-        </div>
-
-        <button type="submit" id="btn-guardar-perfil" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
-          Guardar Perfil
-        </button>
-      </form>
-    </section>
-
-    <!-- SECCIÓN 2: Subir Nuevo Producto -->
-    <section id="seccion-nuevo-producto" class="hidden bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
-      <h2 class="text-xl font-bold text-gray-800 mb-1">Subir Producto al Aparador</h2>
-      <p class="text-sm text-gray-500 mb-4">Publica kits, materiales o herramientas didácticas.</p>
-
-      <div id="msg-producto" class="hidden p-3 rounded-lg text-sm mb-4"></div>
-
-      <form id="form-producto" class="space-y-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Título del Producto</label>
-            <input type="text" id="prod-titulo" required class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Ej. Kit Inicio Masa Madre" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Precio (MXN)</label>
-            <input type="number" id="prod-precio" required min="1" step="0.5" class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="250" />
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-          <textarea id="prod-descripcion" rows="2" required class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Detalla qué incluye el kit o producto..."></textarea>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Imagen del Producto</label>
-          <input type="file" id="prod-imagen" accept="image/*" required class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100" />
-        </div>
-
-        <button type="submit" id="btn-guardar-producto" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
-          Publicar Producto
-        </button>
-      </form>
-    </section>
-
-    <!-- SECCIÓN 3: Mis Productos Publicados -->
-    <section id="seccion-mis-productos" class="hidden bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-      <h2 class="text-xl font-bold text-gray-800 mb-4">Mis Productos Publicados</h2>
-      <div id="lista-mis-productos" class="space-y-3">
-        <p class="text-gray-400 text-sm">Cargando tus productos...</p>
-      </div>
-    </section>
   </main>
 </Layout>
 
 <script>
   import { auth } from '../lib/firebase';
-  import { onAuthStateChanged, signOut } from 'firebase/auth';
+  import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
   import { 
     obtenerPerfilTallerista, 
     actualizarPerfilTallerista, 
@@ -102,35 +135,61 @@ import Layout from '../layouts/Layout.astro';
   } from '../lib/admin';
 
   let currentUserId = '';
+  
+  const seccionLogin = document.getElementById('seccion-login');
+  const seccionDashboard = document.getElementById('seccion-dashboard');
 
-  // 1. Escuchar Autenticación
+  // 1. Escuchar estado de Autenticación
   onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      window.location.href = '/login';
-      return;
+    if (user) {
+      // SI HAY USUARIO: Ocultar login, mostrar dashboard
+      currentUserId = user.uid;
+      if (seccionLogin) seccionLogin.classList.add('hidden');
+      if (seccionDashboard) seccionDashboard.classList.remove('hidden');
+      
+      const saludo = document.getElementById('saludo-user');
+      if (saludo) saludo.textContent = `Sesión activa: ${user.email}`;
+
+      await cargarPerfil();
+      await cargarMisProductos();
+    } else {
+      // SI NO HAY USUARIO: Mostrar login, ocultar dashboard
+      if (seccionLogin) seccionLogin.classList.remove('hidden');
+      if (seccionDashboard) seccionDashboard.classList.add('hidden');
     }
+  });
 
-    currentUserId = user.uid;
-    const saludo = document.getElementById('saludo-user');
-    const btnLogout = document.getElementById('btn-logout');
-    
-    if (saludo) saludo.textContent = `Sesión activa: ${user.email}`;
-    if (btnLogout) btnLogout.classList.remove('hidden');
+  // 2. Lógica de Inicio de Sesión
+  document.getElementById('form-login')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('btn-login') as HTMLButtonElement;
+    const msg = document.getElementById('msg-login-error');
+    const email = (document.getElementById('login-email') as HTMLInputElement).value;
+    const password = (document.getElementById('login-password') as HTMLInputElement).value;
 
-    // Mostrar Secciones
-    document.getElementById('seccion-perfil')?.classList.remove('hidden');
-    document.getElementById('seccion-nuevo-producto')?.classList.remove('hidden');
-    document.getElementById('seccion-mis-productos')?.classList.remove('hidden');
+    btn.disabled = true;
+    btn.textContent = 'Verificando...';
+    if (msg) msg.classList.add('hidden');
 
-    // Cargar Datos del Instructor
-    await cargarPerfil();
-    await cargarMisProductos();
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      // Al tener éxito, onAuthStateChanged se dispara solo y cambia la pantalla
+      (document.getElementById('form-login') as HTMLFormElement).reset();
+    } catch (err) {
+      if (msg) {
+        msg.textContent = 'Credenciales incorrectas. Intenta de nuevo.';
+        msg.classList.remove('hidden');
+      }
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Ingresar al Panel';
+    }
   });
 
   // Logout
   document.getElementById('btn-logout')?.addEventListener('click', () => signOut(auth));
 
-  // 2. Cargar Perfil Existente
+  // 3. Cargar Perfil Existente
   async function cargarPerfil() {
     const perfil = await obtenerPerfilTallerista(currentUserId);
     if (perfil) {
@@ -140,7 +199,7 @@ import Layout from '../layouts/Layout.astro';
     }
   }
 
-  // 3. Guardar Perfil
+  // 4. Guardar Perfil
   document.getElementById('form-perfil')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('btn-guardar-perfil') as HTMLButtonElement;
@@ -172,7 +231,7 @@ import Layout from '../layouts/Layout.astro';
     }
   });
 
-  // 4. Subir Producto (Subida directa a Cloudinary)
+  // 5. Subir Producto
   document.getElementById('form-producto')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('btn-guardar-producto') as HTMLButtonElement;
@@ -185,12 +244,16 @@ import Layout from '../layouts/Layout.astro';
     btn.textContent = 'Subiendo imagen...';
 
     try {
-      // Subir imagen a Cloudinary (Preset unsigned)
+      // Leer las variables del contenedor
+      const mainContainer = document.getElementById('main-container');
+      const cloudName = mainContainer?.dataset.cloud;
+      const uploadPreset = mainContainer?.dataset.preset;
+
       const formData = new FormData();
       formData.append('file', fileInput.files[0]);
-      formData.append('upload_preset', 'ml_default'); // Tu preset de Cloudinary
+      formData.append('upload_preset', uploadPreset || ''); 
 
-      const res = await fetch(`https://api.cloudinary.com/v1_1/tu_cloud_name/image/upload`, {
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
         method: 'POST',
         body: formData
       });
@@ -212,7 +275,7 @@ import Layout from '../layouts/Layout.astro';
       }
 
       (document.getElementById('form-producto') as HTMLFormElement).reset();
-      await cargarMisProductos(); // Recargar la lista
+      await cargarMisProductos(); 
     } catch (err) {
       if (msg) {
         msg.className = 'p-3 rounded-lg text-sm mb-4 bg-red-50 text-red-800 border border-red-200 block';
@@ -224,7 +287,7 @@ import Layout from '../layouts/Layout.astro';
     }
   });
 
-  // 5. Cargar y Gestionar Productos del Instructor
+  // 6. Cargar y Gestionar Productos del Instructor
   async function cargarMisProductos() {
     const contenedor = document.getElementById('lista-mis-productos');
     if (!contenedor) return;
@@ -237,19 +300,19 @@ import Layout from '../layouts/Layout.astro';
     }
 
     contenedor.innerHTML = productos.map((p: any) => `
-      <div class="flex items-center justify-between p-4 border rounded-lg bg-gray-50 hover:bg-white transition-colors">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg bg-gray-50 hover:bg-white transition-colors gap-4">
         <div class="flex items-center gap-3">
-          <img src="${p.imagen_url}" alt="${p.titulo}" class="w-12 h-12 object-cover rounded-md" onerror="this.src='https://picsum.photos/400/300'" />
+          <img src="${p.imagen_url}" alt="${p.titulo}" class="w-12 h-12 object-cover rounded-md border" onerror="this.src='https://picsum.photos/400/300'" />
           <div>
             <h4 class="font-bold text-gray-800 text-sm">${p.titulo}</h4>
             <p class="text-xs text-gray-500">$${p.precio} MXN — ${p.en_stock ? '<span class="text-emerald-600 font-semibold">En Stock</span>' : '<span class="text-red-500 font-semibold">Agotado</span>'}</p>
           </div>
         </div>
-        <div class="flex items-center gap-2">
-          <button data-id="${p.id}" data-stock="${p.en_stock}" class="btn-toggle-stock text-xs px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-100 text-gray-700">
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <button data-id="${p.id}" data-stock="${p.en_stock}" class="btn-toggle-stock flex-1 sm:flex-none text-xs px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-100 text-gray-700">
             ${p.en_stock ? 'Marcar Agotado' : 'Marcar Disponible'}
           </button>
-          <button data-id="${p.id}" class="btn-eliminar-prod text-xs px-3 py-1.5 rounded bg-red-50 hover:bg-red-100 text-red-600 font-medium">
+          <button data-id="${p.id}" class="btn-eliminar-prod flex-1 sm:flex-none text-xs px-3 py-1.5 rounded bg-red-50 hover:bg-red-100 text-red-600 font-medium">
             Eliminar
           </button>
         </div>
