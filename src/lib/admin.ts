@@ -1,5 +1,5 @@
 import { db } from './firebase';
-import { collection, addDoc, doc, updateDoc, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, doc, setDoc, Timestamp } from 'firebase/firestore';
 import { subirImagenCloudinary } from './cloudinary';
 
 const BUILD_HOOK_URL = import.meta.env.PUBLIC_BUILD_HOOK_URL;
@@ -46,10 +46,10 @@ export async function actualizarPerfilTallerista(
   data: { nombre: string; bio: string; contacto: string; whatsapp_ventas: string }
 ) {
   const ref = doc(db, 'talleristas', uid);
-  await updateDoc(ref, {
+  await setDoc(ref, {
     ...data,
     whatsapp_ventas: data.whatsapp_ventas.trim()
-  });
+  }, { merge: true });
 
   await dispararBuildHook();
 }
