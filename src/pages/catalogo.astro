@@ -6,18 +6,30 @@ import { getProductosEnStock, getTalleristasActivos } from '../lib/firebase';
 const productos = await getProductosEnStock();
 const talleristas = await getTalleristasActivos();
 
+// Depuración: Esto imprimirá en la terminal de VS Code cuántos datos llegaron
+console.log(`✅ Catálogo cargó: ${productos.length} productos y ${talleristas.length} instructores.`);
+
 const talleristasMap = new Map(talleristas.map(t => [t.id, t]));
 ---
 
 <Layout title="Aparador Virtual P2P | Talleres Tlaxcala">
-  <main class="container">
-    <h1>Aparador Virtual / Catálogo P2P</h1>
-    <p>Adquiere productos y kits didácticos directamente con los instructores sin comisiones ni intermediarios.</p>
+  <main class="max-w-6xl mx-auto p-6 mt-10">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">Aparador Virtual / Catálogo P2P</h1>
+    <p class="text-gray-600 mb-8">Adquiere productos y kits didácticos directamente con los instructores sin comisiones ni intermediarios.</p>
 
-    <div class="grid-productos">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {productos.map(producto => {
         const tallerista = talleristasMap.get(producto.id_tallerista);
-        if (!tallerista) return null;
+        
+        // Si el perfil falta, mostramos una advertencia en lugar de pantalla en blanco
+        if (!tallerista) {
+          return (
+            <div class="border-2 border-red-400 bg-red-50 p-4 rounded-lg shadow-sm">
+              <p class="text-red-700 text-sm font-semibold mb-1">⚠️ Producto huérfano detectado</p>
+              <p class="text-red-600 text-xs">El producto "{producto.titulo}" se subió, pero falta que el instructor guarde su perfil (ID: {producto.id_tallerista}).</p>
+            </div>
+          );
+        }
         
         return (
           <ProductCard 
@@ -27,6 +39,13 @@ const talleristasMap = new Map(talleristas.map(t => [t.id, t]));
           />
         );
       })}
+
+      <!-- Mensaje por si la base de datos de productos está vacía -->
+      {productos.length === 0 && (
+        <div class="col-span-full text-center py-12">
+          <p class="text-gray-500 text-lg">Aún no hay productos en el catálogo.</p>
+        </div>
+      )}
     </div>
   </main>
 </Layout>

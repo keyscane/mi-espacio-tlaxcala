@@ -17,52 +17,30 @@ const mensajeEncoded = encodeURIComponent(
 const whatsappLink = `https://wa.me/${whatsappVentas.replace(/[^0-9+]/g, '')}?text=${mensajeEncoded}`;
 ---
 
-<div class="product-card">
+<div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
   <img 
     src={producto.imagen_url} 
     alt={producto.titulo} 
     loading="lazy" 
-    class="product-image" 
+    class="w-full h-48 object-cover" 
   />
-  <div class="product-details">
-    <h3>{producto.titulo}</h3>
-    <p class="instructor">Por: {nombreTallerista}</p>
-    <p class="description">{producto.descripcion}</p>
-    <div class="price-action">
-      <span class="price">${producto.precio} MXN</span>
-      <a href={whatsappLink} target="_blank" rel="noopener noreferrer" class="btn-whatsapp">
-        Comprar por WhatsApp
+  <div class="p-5 flex flex-col flex-grow">
+    <h3 class="text-xl font-bold text-gray-800 mb-1 leading-tight">{producto.titulo}</h3>
+    <p class="text-sm text-gray-500 mb-3">Por: <span class="font-medium text-gray-700">{nombreTallerista}</span></p>
+    
+    <!-- line-clamp-3 recorta el texto a 3 líneas si es muy largo -->
+    <p class="text-gray-600 text-sm mb-4 flex-grow line-clamp-3">{producto.descripcion}</p>
+    
+    <div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
+      <span class="text-lg font-black text-gray-900">${producto.precio} <span class="text-xs font-normal text-gray-500">MXN</span></span>
+      <a 
+        href={whatsappLink} 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        class="bg-[#25D366] hover:bg-[#20bd5a] text-white px-4 py-2 rounded-md font-bold text-sm transition-colors flex items-center gap-1"
+      >
+        <span>Comprar</span>
       </a>
     </div>
   </div>
 </div>
-
-<style>
-  .product-card {
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    overflow: hidden;
-    background-color: #ffffff;
-  }
-  .product-image {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-  }
-  .product-details {
-    padding: 1rem;
-  }
-  .instructor {
-    font-size: 0.875rem;
-    color: #64748b;
-  }
-  .btn-whatsapp {
-    display: inline-block;
-    background-color: #25d366;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    text-decoration: none;
-    font-weight: bold;
-  }
-</style>
