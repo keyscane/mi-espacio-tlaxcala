@@ -2,170 +2,279 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Panel de Talleristas">
-  <main class="max-w-4xl mx-auto p-6 mt-10">
-    <h1 class="text-3xl font-bold mb-6 text-gray-800">Panel Privado de Gestión</h1>
-
-    <!-- ESTADO DE CARGA -->
-    <div id="loading-section" class="flex justify-center items-center py-10">
-      <p class="text-gray-500 animate-pulse">Verificando sesión en Firebase...</p>
+<Layout title="Panel de Instructor | Talleres Tlaxcala">
+  <main class="max-w-4xl mx-auto p-6 my-10">
+    <!-- Encabezado y Saludo -->
+    <div class="flex justify-between items-center mb-8 border-b pb-4">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-800">Panel de Control</h1>
+        <p id="saludo-user" class="text-gray-600 text-sm">Cargando sesión...</p>
+      </div>
+      <button id="btn-logout" class="hidden text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg transition-colors">
+        Cerrar Sesión
+      </button>
     </div>
 
-    <!-- SECCIÓN DE LOGIN (Oculta por defecto para evitar parpadeos) -->
-    <div id="login-section" class="hidden bg-white p-6 rounded shadow-md max-w-md mx-auto border border-gray-200">
-      <h2 class="text-xl mb-4 font-semibold">Iniciar Sesión</h2>
-      <form id="login-form">
-        <input type="email" id="email" placeholder="Correo electrónico" class="w-full mb-3 p-2 border rounded focus:ring-2 focus:ring-blue-500" required />
-        <input type="password" id="password" placeholder="Contraseña" class="w-full mb-3 p-2 border rounded focus:ring-2 focus:ring-blue-500" required />
-        <button type="submit" id="btn-login" class="w-full bg-blue-600 text-white font-bold p-2 rounded hover:bg-blue-700 transition">Entrar</button>
+    <!-- SECCIÓN 1: Formulario de Perfil -->
+    <section id="seccion-perfil" class="hidden bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
+      <h2 class="text-xl font-bold text-gray-800 mb-1">Mi Perfil y Contacto P2P</h2>
+      <p class="text-sm text-gray-500 mb-4">Esta información es pública y permite que los alumnos te contacten directamente por WhatsApp.</p>
+
+      <div id="msg-perfil" class="hidden p-3 rounded-lg text-sm mb-4"></div>
+
+      <form id="form-perfil" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Nombre o Firma Comercial</label>
+          <input type="text" id="perfil-nombre" required class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Ej. Taller Artesanal Las Noas" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Semblanza / Biografía corta</label>
+          <textarea id="perfil-bio" rows="2" class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Breve descripción de tu trabajo o proyecto..."></textarea>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">WhatsApp de Ventas (10 dígitos)</label>
+          <input type="tel" id="perfil-whatsapp" required class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="2461234567" />
+        </div>
+
+        <button type="submit" id="btn-guardar-perfil" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+          Guardar Perfil
+        </button>
       </form>
-      <p id="login-error" class="text-red-500 mt-2 hidden text-sm"></p>
-    </div>
+    </section>
 
-    <!-- SECCIÓN DEL DASHBOARD (Oculta hasta iniciar sesión) -->
-    <div id="dashboard-section" class="hidden">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl text-gray-700">Bienvenido, Instructor</h2>
-        <button id="btn-logout" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition">Cerrar Sesión</button>
-      </div>
+    <!-- SECCIÓN 2: Subir Nuevo Producto -->
+    <section id="seccion-nuevo-producto" class="hidden bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
+      <h2 class="text-xl font-bold text-gray-800 mb-1">Subir Producto al Aparador</h2>
+      <p class="text-sm text-gray-500 mb-4">Publica kits, materiales o herramientas didácticas.</p>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
-        <!-- Formulario Perfil -->
-        <div class="bg-white p-6 rounded shadow-md border border-gray-200">
-          <h3 class="text-lg font-bold mb-4 text-gray-800">Mi Perfil y Contacto P2P</h3>
-          <label class="block text-sm text-gray-600 mb-1">Nombre Completo</label>
-          <input type="text" id="perfil-nombre" placeholder="Ej. Yael..." class="w-full mb-3 p-2 border rounded" />
-          
-          <label class="block text-sm text-gray-600 mb-1">Biografía Breve</label>
-          <textarea id="perfil-bio" placeholder="Acerca de tu trabajo..." class="w-full mb-3 p-2 border rounded h-24"></textarea>
-          
-          <label class="block text-sm text-gray-600 mb-1">WhatsApp (Para ventas P2P)</label>
-          <input type="text" id="perfil-whatsapp" placeholder="Ej. +522461234567" class="w-full mb-4 p-2 border rounded" />
-          
-          <button id="btn-perfil" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold p-2 rounded transition">Guardar y Actualizar Sitio</button>
+      <div id="msg-producto" class="hidden p-3 rounded-lg text-sm mb-4"></div>
+
+      <form id="form-producto" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Título del Producto</label>
+            <input type="text" id="prod-titulo" required class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Ej. Kit Inicio Masa Madre" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Precio (MXN)</label>
+            <input type="number" id="prod-precio" required min="1" step="0.5" class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="250" />
+          </div>
         </div>
 
-        <!-- Formulario Producto -->
-        <div class="bg-white p-6 rounded shadow-md border border-gray-200">
-          <h3 class="text-lg font-bold mb-4 text-gray-800">Subir Nuevo Producto al Aparador</h3>
-          <input type="text" id="prod-titulo" placeholder="Título del producto o kit" class="w-full mb-3 p-2 border rounded" />
-          <textarea id="prod-desc" placeholder="Descripción detallada" class="w-full mb-3 p-2 border rounded h-24"></textarea>
-          <input type="number" id="prod-precio" placeholder="Precio final ($)" class="w-full mb-3 p-2 border rounded" />
-          
-          <label class="block text-sm text-gray-600 mb-1">Imagen del Producto</label>
-          <input type="file" id="prod-imagen" accept="image/*" class="w-full mb-4 p-2 border rounded" />
-          
-          <button id="btn-producto" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold p-2 rounded transition">Publicar Producto</button>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+          <textarea id="prod-descripcion" rows="2" required class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Detalla qué incluye el kit o producto..."></textarea>
         </div>
 
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Imagen del Producto</label>
+          <input type="file" id="prod-imagen" accept="image/*" required class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100" />
+        </div>
+
+        <button type="submit" id="btn-guardar-producto" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+          Publicar Producto
+        </button>
+      </form>
+    </section>
+
+    <!-- SECCIÓN 3: Mis Productos Publicados -->
+    <section id="seccion-mis-productos" class="hidden bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Mis Productos Publicados</h2>
+      <div id="lista-mis-productos" class="space-y-3">
+        <p class="text-gray-400 text-sm">Cargando tus productos...</p>
       </div>
-    </div>
+    </section>
   </main>
 </Layout>
 
 <script>
   import { auth } from '../lib/firebase';
-  import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
-  import { actualizarPerfilTallerista, crearProductoP2P } from '../lib/admin';
+  import { onAuthStateChanged, signOut } from 'firebase/auth';
+  import { 
+    obtenerPerfilTallerista, 
+    actualizarPerfilTallerista, 
+    crearProducto, 
+    getProductosPorTallerista,
+    cambiarStockProducto,
+    eliminarProducto 
+  } from '../lib/admin';
 
-  document.addEventListener('DOMContentLoaded', () => {
-    // Referencias a los contenedores
-    const loadingSection = document.getElementById('loading-section');
-    const loginSection = document.getElementById('login-section');
-    const dashboardSection = document.getElementById('dashboard-section');
-    let currentUserId: string | null = null;
+  let currentUserId = '';
 
-    // Escuchar el estado de autenticación
-    onAuthStateChanged(auth, (user) => {
-      loadingSection?.classList.add('hidden'); // Quita el mensaje de carga
-      
-      if (user) {
-        currentUserId = user.uid;
-        loginSection?.classList.add('hidden');
-        dashboardSection?.classList.remove('hidden');
-      } else {
-        currentUserId = null;
-        loginSection?.classList.remove('hidden');
-        dashboardSection?.classList.add('hidden');
-      }
-    });
+  // 1. Escuchar Autenticación
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = '/login';
+      return;
+    }
 
-    // Evento: Iniciar Sesión (Usando 'submit' para que funcione el Enter)
-    document.getElementById('login-form')?.addEventListener('submit', async (e) => {
-      e.preventDefault(); // Evita que la página intente recargarse
-      const email = (document.getElementById('email') as HTMLInputElement).value;
-      const pass = (document.getElementById('password') as HTMLInputElement).value;
-      try {
-        await signInWithEmailAndPassword(auth, email, pass);
-      } catch (error) {
-        const errEl = document.getElementById('login-error');
-        if (errEl) {
-          errEl.innerText = "Credenciales inválidas o usuario no encontrado.";
-          errEl.classList.remove('hidden');
-        }
-      }
-    });
+    currentUserId = user.uid;
+    const saludo = document.getElementById('saludo-user');
+    const btnLogout = document.getElementById('btn-logout');
+    
+    if (saludo) saludo.textContent = `Sesión activa: ${user.email}`;
+    if (btnLogout) btnLogout.classList.remove('hidden');
 
-    // Botón: Cerrar Sesión
-    document.getElementById('btn-logout')?.addEventListener('click', () => {
-      signOut(auth);
-    });
+    // Mostrar Secciones
+    document.getElementById('seccion-perfil')?.classList.remove('hidden');
+    document.getElementById('seccion-nuevo-producto')?.classList.remove('hidden');
+    document.getElementById('seccion-mis-productos')?.classList.remove('hidden');
 
-    // Botón: Actualizar Perfil (Con bloqueo anti-doble clic)
-    document.getElementById('btn-perfil')?.addEventListener('click', async () => {
-      if (!currentUserId) return;
-      const btn = document.getElementById('btn-perfil') as HTMLButtonElement;
-      const nombre = (document.getElementById('perfil-nombre') as HTMLInputElement).value;
-      const bio = (document.getElementById('perfil-bio') as HTMLTextAreaElement).value;
-      const whatsapp = (document.getElementById('perfil-whatsapp') as HTMLInputElement).value;
-      
-      btn.innerText = "Guardando...";
-      btn.disabled = true; // Bloquea el botón
-      
-      try {
-        await actualizarPerfilTallerista(currentUserId, { nombre, bio, contacto: '', whatsapp_ventas: whatsapp });
-        alert('Perfil guardado. Netlify está reconstruyendo tu sitio web ahora mismo.');
-      } catch (error) {
-        alert('Error al guardar el perfil.');
-      } finally {
-        btn.innerText = "Guardar y Actualizar Sitio";
-        btn.disabled = false; // Desbloquea el botón
-      }
-    });
-
-    // Botón: Subir Producto
-    document.getElementById('btn-producto')?.addEventListener('click', async () => {
-      if (!currentUserId) return;
-      const btn = document.getElementById('btn-producto') as HTMLButtonElement;
-      const titulo = (document.getElementById('prod-titulo') as HTMLInputElement).value;
-      const desc = (document.getElementById('prod-desc') as HTMLTextAreaElement).value;
-      const precio = (document.getElementById('prod-precio') as HTMLInputElement).value;
-      const archivo = (document.getElementById('prod-imagen') as HTMLInputElement).files?.[0];
-      
-      if (!archivo || !titulo || !precio) {
-        return alert('Por favor, completa los campos y selecciona una imagen.');
-      }
-
-      btn.innerText = "Subiendo imagen y guardando...";
-      btn.disabled = true;
-      
-      try {
-        await crearProductoP2P(currentUserId, titulo, desc, Number(precio), archivo);
-        alert('¡Producto publicado con éxito! Netlify está recompilando el catálogo.');
-        
-        // Limpiar formulario
-        (document.getElementById('prod-titulo') as HTMLInputElement).value = '';
-        (document.getElementById('prod-desc') as HTMLTextAreaElement).value = '';
-        (document.getElementById('prod-precio') as HTMLInputElement).value = '';
-        (document.getElementById('prod-imagen') as HTMLInputElement).value = '';
-      } catch (error) {
-        console.error(error);
-        alert('Error al publicar el producto.');
-      } finally {
-        btn.innerText = "Publicar Producto";
-        btn.disabled = false;
-      }
-    });
+    // Cargar Datos del Instructor
+    await cargarPerfil();
+    await cargarMisProductos();
   });
+
+  // Logout
+  document.getElementById('btn-logout')?.addEventListener('click', () => signOut(auth));
+
+  // 2. Cargar Perfil Existente
+  async function cargarPerfil() {
+    const perfil = await obtenerPerfilTallerista(currentUserId);
+    if (perfil) {
+      (document.getElementById('perfil-nombre') as HTMLInputElement).value = perfil.nombre || '';
+      (document.getElementById('perfil-bio') as HTMLTextAreaElement).value = perfil.bio || '';
+      (document.getElementById('perfil-whatsapp') as HTMLInputElement).value = perfil.whatsapp_ventas || '';
+    }
+  }
+
+  // 3. Guardar Perfil
+  document.getElementById('form-perfil')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('btn-guardar-perfil') as HTMLButtonElement;
+    const msg = document.getElementById('msg-perfil');
+    
+    btn.disabled = true;
+    btn.textContent = 'Guardando...';
+
+    try {
+      await actualizarPerfilTallerista(currentUserId, {
+        nombre: (document.getElementById('perfil-nombre') as HTMLInputElement).value,
+        bio: (document.getElementById('perfil-bio') as HTMLTextAreaElement).value,
+        contacto: '',
+        whatsapp_ventas: (document.getElementById('perfil-whatsapp') as HTMLInputElement).value
+      });
+
+      if (msg) {
+        msg.className = 'p-3 rounded-lg text-sm mb-4 bg-emerald-50 text-emerald-800 border border-emerald-200 block';
+        msg.textContent = '✅ Perfil actualizado correctamente.';
+      }
+    } catch (err) {
+      if (msg) {
+        msg.className = 'p-3 rounded-lg text-sm mb-4 bg-red-50 text-red-800 border border-red-200 block';
+        msg.textContent = '❌ Error al guardar perfil.';
+      }
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Guardar Perfil';
+    }
+  });
+
+  // 4. Subir Producto (Subida directa a Cloudinary)
+  document.getElementById('form-producto')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('btn-guardar-producto') as HTMLButtonElement;
+    const msg = document.getElementById('msg-producto');
+    const fileInput = document.getElementById('prod-imagen') as HTMLInputElement;
+
+    if (!fileInput.files || fileInput.files.length === 0) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Subiendo imagen...';
+
+    try {
+      // Subir imagen a Cloudinary (Preset unsigned)
+      const formData = new FormData();
+      formData.append('file', fileInput.files[0]);
+      formData.append('upload_preset', 'ml_default'); // Tu preset de Cloudinary
+
+      const res = await fetch(`https://api.cloudinary.com/v1_1/tu_cloud_name/image/upload`, {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+
+      btn.textContent = 'Guardando producto...';
+
+      await crearProducto({
+        id_tallerista: currentUserId,
+        titulo: (document.getElementById('prod-titulo') as HTMLInputElement).value,
+        descripcion: (document.getElementById('prod-descripcion') as HTMLTextAreaElement).value,
+        precio: parseFloat((document.getElementById('prod-precio') as HTMLInputElement).value),
+        imagen_url: data.secure_url || 'https://picsum.photos/400/300'
+      });
+
+      if (msg) {
+        msg.className = 'p-3 rounded-lg text-sm mb-4 bg-emerald-50 text-emerald-800 border border-emerald-200 block';
+        msg.textContent = '✅ Producto publicado en el catálogo al instante.';
+      }
+
+      (document.getElementById('form-producto') as HTMLFormElement).reset();
+      await cargarMisProductos(); // Recargar la lista
+    } catch (err) {
+      if (msg) {
+        msg.className = 'p-3 rounded-lg text-sm mb-4 bg-red-50 text-red-800 border border-red-200 block';
+        msg.textContent = '❌ Error al publicar producto.';
+      }
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Publicar Producto';
+    }
+  });
+
+  // 5. Cargar y Gestionar Productos del Instructor
+  async function cargarMisProductos() {
+    const contenedor = document.getElementById('lista-mis-productos');
+    if (!contenedor) return;
+
+    const productos = await getProductosPorTallerista(currentUserId);
+
+    if (productos.length === 0) {
+      contenedor.innerHTML = '<p class="text-gray-500 text-sm">Aún no has publicado productos.</p>';
+      return;
+    }
+
+    contenedor.innerHTML = productos.map((p: any) => `
+      <div class="flex items-center justify-between p-4 border rounded-lg bg-gray-50 hover:bg-white transition-colors">
+        <div class="flex items-center gap-3">
+          <img src="${p.imagen_url}" alt="${p.titulo}" class="w-12 h-12 object-cover rounded-md" onerror="this.src='https://picsum.photos/400/300'" />
+          <div>
+            <h4 class="font-bold text-gray-800 text-sm">${p.titulo}</h4>
+            <p class="text-xs text-gray-500">$${p.precio} MXN — ${p.en_stock ? '<span class="text-emerald-600 font-semibold">En Stock</span>' : '<span class="text-red-500 font-semibold">Agotado</span>'}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button data-id="${p.id}" data-stock="${p.en_stock}" class="btn-toggle-stock text-xs px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-100 text-gray-700">
+            ${p.en_stock ? 'Marcar Agotado' : 'Marcar Disponible'}
+          </button>
+          <button data-id="${p.id}" class="btn-eliminar-prod text-xs px-3 py-1.5 rounded bg-red-50 hover:bg-red-100 text-red-600 font-medium">
+            Eliminar
+          </button>
+        </div>
+      </div>
+    `).join('');
+
+    // Asignar eventos a los botones dinámicos
+    document.querySelectorAll('.btn-toggle-stock').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const target = e.currentTarget as HTMLButtonElement;
+        const id = target.getAttribute('data-id')!;
+        const stockActual = target.getAttribute('data-stock') === 'true';
+        await cambiarStockProducto(id, stockActual);
+        await cargarMisProductos();
+      });
+    });
+
+    document.querySelectorAll('.btn-eliminar-prod').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        if (!confirm('¿Seguro que deseas eliminar este producto del catálogo?')) return;
+        const target = e.currentTarget as HTMLButtonElement;
+        const id = target.getAttribute('data-id')!;
+        await eliminarProducto(id);
+        await cargarMisProductos();
+      });
+    });
+  }
 </script>

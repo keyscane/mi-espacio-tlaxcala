@@ -1,15 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import ProductCard from '../components/ProductCard.astro';
-import { getProductosEnStock, getTalleristasActivos } from '../lib/firebase';
-
-const productos = await getProductosEnStock();
-const talleristas = await getTalleristasActivos();
-
-// Depuración: Esto imprimirá en la terminal de VS Code cuántos datos llegaron
-console.log(`✅ Catálogo cargó: ${productos.length} productos y ${talleristas.length} instructores.`);
-
-const talleristasMap = new Map(talleristas.map(t => [t.id, t]));
 ---
 
 <Layout title="Aparador Virtual P2P | Talleres Tlaxcala">
@@ -17,35 +7,105 @@ const talleristasMap = new Map(talleristas.map(t => [t.id, t]));
     <h1 class="text-3xl font-bold text-gray-800 mb-2">Aparador Virtual / Catálogo P2P</h1>
     <p class="text-gray-600 mb-8">Adquiere productos y kits didácticos directamente con los instructores sin comisiones ni intermediarios.</p>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {productos.map(producto => {
-        const tallerista = talleristasMap.get(producto.id_tallerista);
-        
-        // Si el perfil falta, mostramos una advertencia en lugar de pantalla en blanco
-        if (!tallerista) {
-          return (
-            <div class="border-2 border-red-400 bg-red-50 p-4 rounded-lg shadow-sm">
-              <p class="text-red-700 text-sm font-semibold mb-1">⚠️ Producto huérfano detectado</p>
-              <p class="text-red-600 text-xs">El producto "{producto.titulo}" se subió, pero falta que el instructor guarde su perfil (ID: {producto.id_tallerista}).</p>
-            </div>
-          );
-        }
-        
-        return (
-          <ProductCard 
-            producto={producto} 
-            whatsappVentas={tallerista.whatsapp_ventas} 
-            nombreTallerista={tallerista.nombre}
-          />
-        );
-      })}
+    <!-- Estado de carga (Spinner) -->
+    <div id="loading" class="text-center py-16">
+      <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-emerald-600 border-t-transparent"></div>
+      <p class="text-gray-500 mt-3 text-sm font-medium">Cargando catálogo en tiempo real...</p>
+    </div>
 
-      <!-- Mensaje por si la base de datos de productos está vacía -->
-      {productos.length === 0 && (
-        <div class="col-span-full text-center py-12">
-          <p class="text-gray-500 text-lg">Aún no hay productos en el catálogo.</p>
-        </div>
-      )}
+    <!-- Grid donde se inyectan las tarjetas -->
+    <div id="grid-productos" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+    <!-- Mensaje para cuando la base de datos esté vacía -->
+    <div id="empty-state" class="hidden text-center py-16">
+      <p class="text-gray-500 text-lg">Aún no hay productos disponibles en el catálogo.</p>
     </div>
   </main>
 </Layout>
+
+<script>
+  import { getProductosEnStock, getTalleristasActivos } from '../lib/firebase';
+
+  async function renderizarCatalogo() {
+    const loading = document.getElementById('loading');
+    const grid = document.getElementById('grid-productos');
+    const emptyState = document.getElementById('empty-state');
+
+    try {
+      // Consultamos Firestore en tiempo real desde el navegador
+      const [productos, talleristas] = await Promise.all([
+        getProductosEnStock(),
+        getTalleristasActivos()
+      ]);
+
+      const talleristasMap = new Map(talleristas.map(t => [t.id, t]));
+
+      // Ocultar cargador
+      if (loading) loading.style.display = 'none';
+
+      if (productos.length === 0) {
+        if (emptyState) emptyState.classList.remove('hidden');
+        return;
+      }
+
+      if (grid) {
+        grid.classList.remove('hidden');
+        grid.innerHTML = productos.map(producto => {
+          const tallerista = talleristasMap.get(producto.id_tallerista);
+
+          // Si falta el perfil del instructor
+          if (!tallerista) {
+            return `
+              <div class="border-2 border-red-400 bg-red-50 p-4 rounded-lg shadow-sm">
+                <p class="text-red-700 text-sm font-semibold mb-1">⚠️ Producto huérfano detectado</p>
+                <p class="text-red-600 text-xs">El producto "${producto.titulo}" existe, pero el instructor aún no guarda su perfil (ID: ${producto.id_tallerista}).</p>
+              </div>
+            `;
+          }
+
+          const mensajeWA = encodeURIComponent(`Hola, vi tu producto "${producto.titulo}" en el catálogo de Talleres Tlaxcala y me interesa adquirirlo.`);
+          const enlaceWhatsapp = `https://wa.me/${tallerista.whatsapp_ventas}?text=${mensajeWA}`;
+
+          return `
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-gray-100 flex flex-col justify-between">
+              <div>
+                <img 
+                  src="${producto.imagen_url}" 
+                  alt="${producto.titulo}" 
+                  class="w-full h-48 object-cover" 
+                  onerror="this.src='https://picsum.photos/400/300'"
+                />
+                <div class="p-5">
+                  <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 mb-2">
+                    Por: ${tallerista.nombre}
+                  </span>
+                  <h3 class="text-xl font-bold text-gray-800 mb-1">${producto.titulo}</h3>
+                  <p class="text-gray-600 text-sm mb-4 line-clamp-3">${producto.descripcion}</p>
+                </div>
+              </div>
+              <div class="p-5 pt-0 border-t border-gray-50 mt-auto flex items-center justify-between">
+                <span class="text-2xl font-bold text-gray-900">$${producto.precio} <span class="text-xs font-normal text-gray-500">MXN</span></span>
+                <a 
+                  href="${enlaceWhatsapp}" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-2"
+                >
+                  Comprar por WA
+                </a>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    } catch (error) {
+      console.error('Error al cargar el catálogo:', error);
+      if (loading) {
+        loading.innerHTML = `<p class="text-red-500 text-sm font-medium">Ocurrió un error al cargar los productos. Por favor recarga la página.</p>`;
+      }
+    }
+  }
+
+  // Ejecutar en cuanto el navegador monte la vista
+  renderizarCatalogo();
+</script>
