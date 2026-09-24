@@ -6,12 +6,19 @@ import Layout from '../layouts/Layout.astro';
   <main class="max-w-4xl mx-auto p-6 mt-10">
     <h1 class="text-3xl font-bold mb-6 text-gray-800">Panel Privado de Gestión</h1>
 
-    <!-- SECCIÓN DE LOGIN (Visible por defecto) -->
-    <div id="login-section" class="bg-white p-6 rounded shadow-md max-w-md mx-auto border border-gray-200">
+    <!-- ESTADO DE CARGA -->
+    <div id="loading-section" class="flex justify-center items-center py-10">
+      <p class="text-gray-500 animate-pulse">Verificando sesión en Firebase...</p>
+    </div>
+
+    <!-- SECCIÓN DE LOGIN (Oculta por defecto para evitar parpadeos) -->
+    <div id="login-section" class="hidden bg-white p-6 rounded shadow-md max-w-md mx-auto border border-gray-200">
       <h2 class="text-xl mb-4 font-semibold">Iniciar Sesión</h2>
-      <input type="email" id="email" placeholder="Correo electrónico" class="w-full mb-3 p-2 border rounded focus:ring-2 focus:ring-blue-500" />
-      <input type="password" id="password" placeholder="Contraseña" class="w-full mb-3 p-2 border rounded focus:ring-2 focus:ring-blue-500" />
-      <button id="btn-login" class="w-full bg-blue-600 text-white font-bold p-2 rounded hover:bg-blue-700 transition">Entrar</button>
+      <form id="login-form">
+        <input type="email" id="email" placeholder="Correo electrónico" class="w-full mb-3 p-2 border rounded focus:ring-2 focus:ring-blue-500" required />
+        <input type="password" id="password" placeholder="Contraseña" class="w-full mb-3 p-2 border rounded focus:ring-2 focus:ring-blue-500" required />
+        <button type="submit" id="btn-login" class="w-full bg-blue-600 text-white font-bold p-2 rounded hover:bg-blue-700 transition">Entrar</button>
+      </form>
       <p id="login-error" class="text-red-500 mt-2 hidden text-sm"></p>
     </div>
 
@@ -62,94 +69,103 @@ import Layout from '../layouts/Layout.astro';
   import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
   import { actualizarPerfilTallerista, crearProductoP2P } from '../lib/admin';
 
-  // Referencias a los contenedores
-  const loginSection = document.getElementById('login-section');
-  const dashboardSection = document.getElementById('dashboard-section');
-  let currentUserId: string | null = null;
+  document.addEventListener('DOMContentLoaded', () => {
+    // Referencias a los contenedores
+    const loadingSection = document.getElementById('loading-section');
+    const loginSection = document.getElementById('login-section');
+    const dashboardSection = document.getElementById('dashboard-section');
+    let currentUserId: string | null = null;
 
-  // Escuchar el estado de autenticación (Cambia la vista si hay sesión)
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      currentUserId = user.uid;
-      loginSection?.classList.add('hidden');
-      dashboardSection?.classList.remove('hidden');
-    } else {
-      currentUserId = null;
-      loginSection?.classList.remove('hidden');
-      dashboardSection?.classList.add('hidden');
-    }
-  });
-
-  // Botón: Iniciar Sesión
-  document.getElementById('btn-login')?.addEventListener('click', async () => {
-    const email = (document.getElementById('email') as HTMLInputElement).value;
-    const pass = (document.getElementById('password') as HTMLInputElement).value;
-    try {
-      await signInWithEmailAndPassword(auth, email, pass);
-    } catch (error) {
-      const errEl = document.getElementById('login-error');
-      if (errEl) {
-        errEl.innerText = "Credenciales inválidas o usuario no encontrado.";
-        errEl.classList.remove('hidden');
-      }
-    }
-  });
-
-  // Botón: Cerrar Sesión
-  document.getElementById('btn-logout')?.addEventListener('click', () => {
-    signOut(auth);
-  });
-
-  // Botón: Actualizar Perfil
-  document.getElementById('btn-perfil')?.addEventListener('click', async () => {
-    if (!currentUserId) return;
-    const btn = document.getElementById('btn-perfil') as HTMLButtonElement;
-    const nombre = (document.getElementById('perfil-nombre') as HTMLInputElement).value;
-    const bio = (document.getElementById('perfil-bio') as HTMLTextAreaElement).value;
-    const whatsapp = (document.getElementById('perfil-whatsapp') as HTMLInputElement).value;
-    
-    btn.innerText = "Guardando...";
-    try {
-      await actualizarPerfilTallerista(currentUserId, { nombre, bio, contacto: '', whatsapp_ventas: whatsapp });
-      alert('Perfil guardado. Netlify está reconstruyendo tu sitio web ahora mismo.');
-    } catch (error) {
-      alert('Error al guardar el perfil.');
-    } finally {
-      btn.innerText = "Guardar y Actualizar Sitio";
-    }
-  });
-
-  // Botón: Subir Producto
-  document.getElementById('btn-producto')?.addEventListener('click', async () => {
-    if (!currentUserId) return;
-    const btn = document.getElementById('btn-producto') as HTMLButtonElement;
-    const titulo = (document.getElementById('prod-titulo') as HTMLInputElement).value;
-    const desc = (document.getElementById('prod-desc') as HTMLTextAreaElement).value;
-    const precio = (document.getElementById('prod-precio') as HTMLInputElement).value;
-    const archivo = (document.getElementById('prod-imagen') as HTMLInputElement).files?.[0];
-    
-    if (!archivo || !titulo || !precio) {
-      return alert('Por favor, completa los campos y selecciona una imagen.');
-    }
-
-    btn.innerText = "Subiendo imagen y guardando...";
-    btn.disabled = true;
-    
-    try {
-      await crearProductoP2P(currentUserId, titulo, desc, Number(precio), archivo);
-      alert('¡Producto publicado con éxito! Netlify está recompilando el catálogo.');
+    // Escuchar el estado de autenticación
+    onAuthStateChanged(auth, (user) => {
+      loadingSection?.classList.add('hidden'); // Quita el mensaje de carga
       
-      // Limpiar formulario
-      (document.getElementById('prod-titulo') as HTMLInputElement).value = '';
-      (document.getElementById('prod-desc') as HTMLTextAreaElement).value = '';
-      (document.getElementById('prod-precio') as HTMLInputElement).value = '';
-      (document.getElementById('prod-imagen') as HTMLInputElement).value = '';
-    } catch (error) {
-      console.error(error);
-      alert('Error al publicar el producto.');
-    } finally {
-      btn.innerText = "Publicar Producto";
-      btn.disabled = false;
-    }
+      if (user) {
+        currentUserId = user.uid;
+        loginSection?.classList.add('hidden');
+        dashboardSection?.classList.remove('hidden');
+      } else {
+        currentUserId = null;
+        loginSection?.classList.remove('hidden');
+        dashboardSection?.classList.add('hidden');
+      }
+    });
+
+    // Evento: Iniciar Sesión (Usando 'submit' para que funcione el Enter)
+    document.getElementById('login-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault(); // Evita que la página intente recargarse
+      const email = (document.getElementById('email') as HTMLInputElement).value;
+      const pass = (document.getElementById('password') as HTMLInputElement).value;
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+      } catch (error) {
+        const errEl = document.getElementById('login-error');
+        if (errEl) {
+          errEl.innerText = "Credenciales inválidas o usuario no encontrado.";
+          errEl.classList.remove('hidden');
+        }
+      }
+    });
+
+    // Botón: Cerrar Sesión
+    document.getElementById('btn-logout')?.addEventListener('click', () => {
+      signOut(auth);
+    });
+
+    // Botón: Actualizar Perfil (Con bloqueo anti-doble clic)
+    document.getElementById('btn-perfil')?.addEventListener('click', async () => {
+      if (!currentUserId) return;
+      const btn = document.getElementById('btn-perfil') as HTMLButtonElement;
+      const nombre = (document.getElementById('perfil-nombre') as HTMLInputElement).value;
+      const bio = (document.getElementById('perfil-bio') as HTMLTextAreaElement).value;
+      const whatsapp = (document.getElementById('perfil-whatsapp') as HTMLInputElement).value;
+      
+      btn.innerText = "Guardando...";
+      btn.disabled = true; // Bloquea el botón
+      
+      try {
+        await actualizarPerfilTallerista(currentUserId, { nombre, bio, contacto: '', whatsapp_ventas: whatsapp });
+        alert('Perfil guardado. Netlify está reconstruyendo tu sitio web ahora mismo.');
+      } catch (error) {
+        alert('Error al guardar el perfil.');
+      } finally {
+        btn.innerText = "Guardar y Actualizar Sitio";
+        btn.disabled = false; // Desbloquea el botón
+      }
+    });
+
+    // Botón: Subir Producto
+    document.getElementById('btn-producto')?.addEventListener('click', async () => {
+      if (!currentUserId) return;
+      const btn = document.getElementById('btn-producto') as HTMLButtonElement;
+      const titulo = (document.getElementById('prod-titulo') as HTMLInputElement).value;
+      const desc = (document.getElementById('prod-desc') as HTMLTextAreaElement).value;
+      const precio = (document.getElementById('prod-precio') as HTMLInputElement).value;
+      const archivo = (document.getElementById('prod-imagen') as HTMLInputElement).files?.[0];
+      
+      if (!archivo || !titulo || !precio) {
+        return alert('Por favor, completa los campos y selecciona una imagen.');
+      }
+
+      btn.innerText = "Subiendo imagen y guardando...";
+      btn.disabled = true;
+      
+      try {
+        await crearProductoP2P(currentUserId, titulo, desc, Number(precio), archivo);
+        alert('¡Producto publicado con éxito! Netlify está recompilando el catálogo.');
+        
+        // Limpiar formulario
+        (document.getElementById('prod-titulo') as HTMLInputElement).value = '';
+        (document.getElementById('prod-desc') as HTMLTextAreaElement).value = '';
+        (document.getElementById('prod-precio') as HTMLInputElement).value = '';
+        (document.getElementById('prod-imagen') as HTMLInputElement).value = '';
+      } catch (error) {
+        console.error(error);
+        alert('Error al publicar el producto.');
+      } finally {
+        btn.innerText = "Publicar Producto";
+        btn.disabled = false;
+      }
+    });
   });
 </script>
