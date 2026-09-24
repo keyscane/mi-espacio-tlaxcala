@@ -8,6 +8,7 @@ import {
   orderBy,
   Timestamp 
 } from "firebase/firestore";
+import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: import.meta.env.PUBLIC_FIREBASE_API_KEY,
@@ -19,6 +20,7 @@ const firebaseConfig = {
 
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+export const auth = getAuth(app);
 
 // Interfaces TypeScript
 export interface Tallerista {
