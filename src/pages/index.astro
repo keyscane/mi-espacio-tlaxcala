@@ -1,17 +1,366 @@
 ---
-
+import Layout from '../layouts/Layout.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="Espacio Independencia 46 | Talleres y Cultura en Tlaxcala">
+  <!-- NAV BAR -->
+  <nav class="bg-white shadow-sm sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="font-bold text-xl text-gray-800 tracking-tight">
+        Independencia<span class="text-indigo-400">46</span>
+      </div>
+      <div class="space-x-6 text-sm font-medium text-gray-600">
+        <a href="#talleres" class="hover:text-emerald-600 transition-colors">Talleres</a>
+        <a href="#comunidad" class="hover:text-emerald-600 transition-colors">Comunidad</a>
+        <a href="/catalogo" class="hover:text-emerald-600 transition-colors">Catálogo P2P</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION CON CARRUSEL DE FONDO -->
+  <section class="relative h-[85vh] min-h-125 flex items-center justify-center overflow-hidden bg-gray-900 text-white">
+    
+    <!-- Capa de Imágenes (Carrusel) -->
+    <div id="hero-carousel" class="absolute inset-0 z-0">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/d/d8/Vista_nocturna_Bas%C3%ADlica_de_Ocotl%C3%A1n.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original" class="hero-img absolute inset-0 w-full h-full object-cover opacity-100 transition-opacity duration-1000" alt="Espacio de cerámica" />
+      <img src="https://upload.wikimedia.org/wikipedia/commons/f/f3/Entre_arboles_campanario.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original" class="hero-img absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000" alt="Taller de acuarela2" />
+      <img src="https://upload.wikimedia.org/wikipedia/commons/8/81/Centro%2C_Tlaxcala_de_Xicoht%C3%A9ncatl%2C_Tlax.%2C_Mexico_-_panoramio_%28292%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original" class="hero-img absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000" alt="Instalaciones Independencia 46" />
+    </div>
+
+    <!-- Overlay Gradiente (Asegura legibilidad del texto sobre cualquier foto) -->
+    <div class="absolute inset-0 z-10 bg-linear-to-t from-black/80 via-black/50 to-black/30"></div>
+
+    <!-- Contenido del Hero -->
+    <div class="relative z-20 max-w-4xl mx-auto px-6 text-center flex flex-col items-center">
+      <span class="px-3 py-1 bg-indigo-600/65 text-white backdrop-blur-md rounded-full text-xs font-semibold mb-6 tracking-wide uppercase border border-emerald-400/30">
+        Centro de Creación y Encuentro
+      </span>
+      <h1 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight drop-shadow-md">
+        Aprende, crea y conecta en <br class="hidden md:block" /> 
+        el corazón de <span class="text-indigo-400">Tlaxcala</span>.
+      </h1>
+      <p class="text-lg md:text-xl text-gray-200 mb-10 max-w-2xl drop-shadow-sm">
+        Un espacio dedicado a las artes manuales, el desarrollo personal y la comunidad. Descubre nuestra oferta de talleres de cerámica, acuarela, euritmia y más.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+        <a href="#talleres" class="bg-indigo-600/65 hover:bg-indigo-500/90 text-white font-medium px-6 py-3 rounded-xl transition-colors shadow-lg">
+          Ver agenda de talleres
+        </a>
+        <a href="#ubicacion" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md font-medium px-6 py-3 rounded-xl transition-colors">
+          ¿Cómo llegar?
+        </a>
+      </div>
+    </div>
+  </section>
+
+<script>
+  // Script para alternar las fotos del carrusel cada 5 segundos
+  const imagenes = document.querySelectorAll('.hero-img');
+  let indexActual = 0;
+
+  if (imagenes.length > 0) {
+    setInterval(() => {
+      imagenes[indexActual].classList.remove('opacity-100');
+      imagenes[indexActual].classList.add('opacity-0');
+
+      indexActual = (indexActual + 1) % imagenes.length;
+
+      imagenes[indexActual].classList.remove('opacity-0');
+      imagenes[indexActual].classList.add('opacity-100');
+    }, 5000);
+  }
+</script>
+
+  <!-- TABLERO DE TALLERES -->
+  <section id="talleres" class="py-20 bg-white">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Agenda de Talleres</h2>
+        <p class="text-gray-600">Toca un taller para ver fechas, conocer al instructor e inscribirte.</p>
+      </div>
+
+      <div id="grid-talleres" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <!-- TARJETA ESTÁTICA (Ejemplo que abre el Modal) -->
+        <article 
+          class="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-emerald-200 transition-all cursor-pointer overflow-hidden flex flex-col group btn-abrir-modal"
+          data-titulo="Taller de Cerámica de Alta Temperatura"
+          data-imagen="https://picsum.photos/600/400?ceramica"
+          data-instructor="Yael"
+          data-bio="Fundador de Las Noas. Apasionado por los procesos térmicos, la masa madre y el modelado en barro con técnicas tradicionales y esmaltes de alta temperatura."
+          data-foto-instructor="https://api.dicebear.com/7.x/avataaars/svg?seed=Yael"
+          data-fechas="Próximo inicio: Martes 10 de Octubre | Horario: 16:00 a 19:00 hrs"
+          data-desc="Aprende técnicas de modelado manual, uso de tornos y formulación de esmaltes. Espacio con aforo completo y ambiente colaborativo ideal para principiantes y avanzados."
+          data-wa="https://wa.me/2460000000?text=Hola,%20me%20interesa%20el%20taller%20de%20Cerámica."
+        >
+          <div class="h-48 relative overflow-hidden">
+            <img src="https://picsum.photos/600/400?ceramica" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            <div class="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-gray-800 shadow-sm">
+              Martes y Jueves
+            </div>
+            <!-- Indicador visual de interacción -->
+            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <span class="text-white font-semibold bg-emerald-600/90 px-4 py-2 rounded-full text-sm">Ver detalles del taller</span>
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Taller de Cerámica de Alta Temperatura</h3>
+            <p class="text-gray-500 text-sm mb-4 line-clamp-2">Aprende técnicas de modelado manual, uso de tornos y formulación de esmaltes...</p>
+            <div class="flex items-center gap-2 border-t border-gray-50 pt-4">
+              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Yael" class="w-8 h-8 rounded-full bg-gray-100" />
+              <span class="text-sm font-medium text-gray-700">Por: Yael</span>
+            </div>
+          </div>
+        </article>
+        <!-- Fin Tarjeta -->
+
+      </div>
+    </div>
+  </section>
+
+  <!-- COMUNIDAD Y REDES (Nuevos Instructores) -->
+  <section id="comunidad" class="py-20 bg-emerald-950 text-white overflow-hidden">
+    <div class="max-w-4xl mx-auto px-6 text-center mb-16">
+      <h2 class="text-3xl font-bold mb-6">¿Buscas un espacio para impartir tu taller?</h2>
+      <p class="text-emerald-100 text-lg mb-8">
+        Si eres tallerista o artesano y necesitas infraestructura para tus clases, Av. Independencia 46 tiene las puertas abiertas para sumar nuevas disciplinas.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a 
+          href="https://wa.me/TUTELEFONO?text=Hola,%20soy%20instructor%20y%20me%20gustaría%20proponer%20un%20taller." 
+          class="bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold px-8 py-3 rounded-lg transition-colors shadow-lg flex items-center justify-center gap-2"
+        >
+          Proponer por WhatsApp
+        </a>
+        <a 
+          href="mailto:contacto@independencia46.space?subject=Propuesta%20de%20Taller" 
+          class="bg-transparent border border-emerald-500 hover:bg-emerald-900 text-emerald-300 font-bold px-8 py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+        >
+          Enviar Correo
+        </a>
+      </div>
+    </div>
+
+    <!-- Banner dinámico de Redes Sociales (CSS Marquee) -->
+    <div class="border-y border-emerald-800/50 py-6 bg-emerald-900/30 flex overflow-hidden group">
+      <div class="flex space-x-12 animate-marquee whitespace-nowrap group-hover:[animation-play-state:paused]">
+        <!-- Set 1 -->
+        <span class="text-emerald-300/60 font-mono text-lg">@independencia46</span>
+        <span class="text-emerald-300/60 font-mono text-lg">•</span>
+        <span class="text-emerald-300/60 font-mono text-lg">@taller_las_noas</span>
+        <span class="text-emerald-300/60 font-mono text-lg">•</span>
+        <span class="text-emerald-300/60 font-mono text-lg">@acuarela.tlax</span>
+        <span class="text-emerald-300/60 font-mono text-lg">•</span>
+        <span class="text-emerald-300/60 font-mono text-lg">@euritmia_movimiento</span>
+        <span class="text-emerald-300/60 font-mono text-lg">•</span>
+        <!-- Duplicado para efecto infinito -->
+        <span class="text-emerald-300/60 font-mono text-lg">@independencia46</span>
+        <span class="text-emerald-300/60 font-mono text-lg">•</span>
+        <span class="text-emerald-300/60 font-mono text-lg">@taller_las_noas</span>
+        <span class="text-emerald-300/60 font-mono text-lg">•</span>
+        <span class="text-emerald-300/60 font-mono text-lg">@acuarela.tlax</span>
+        <span class="text-emerald-300/60 font-mono text-lg">•</span>
+        <span class="text-emerald-300/60 font-mono text-lg">@euritmia_movimiento</span>
+      </div>
+    </div>
+  </section>
+  <!-- MAPA Y UBICACIÓN -->
+  <section id="ubicacion" class="py-20 bg-gray-50 border-t border-gray-200">
+    <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+      <div>
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Encuéntranos</h2>
+        <p class="text-gray-600 mb-8 leading-relaxed">
+          Nuestras instalaciones están adaptadas para la creación manual, rodeadas de un ambiente que fomenta la tranquilidad y el aprendizaje continuo en el corazón de la ciudad.
+        </p>
+        <ul class="space-y-5 text-gray-700">
+          <li class="flex items-start gap-4">
+            <div class="bg-emerald-100 p-2 rounded-lg shrink-0">
+              <svg class="w-6 h-6 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            </div>
+            <div>
+              <p class="font-bold text-gray-900">Dirección</p>
+              <p class="text-sm mt-1">Av. Independencia #46, Tlaxcala Centro, Tlax.</p>
+            </div>
+          </li>
+          <li class="flex items-start gap-4">
+            <div class="bg-emerald-100 p-2 rounded-lg shrink-0">
+              <svg class="w-6 h-6 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <div>
+              <p class="font-bold text-gray-900">Horarios de acceso</p>
+              <p class="text-sm mt-1">El acceso al espacio está sujeto a la programación y duración de cada taller.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+      
+      <!-- Contenedor del Mapa (Iframe de Google Maps) -->
+      <div class="h-96 bg-gray-200 rounded-2xl overflow-hidden shadow-md border border-gray-200 relative group">
+        <!-- Overlay sutil que desaparece al pasar el cursor para que el mapa resalte -->
+        <div class="absolute inset-0 bg-gray-900/5 group-hover:bg-transparent transition-colors pointer-events-none z-10"></div>
+        <iframe 
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d235.33558986014623!2d-98.24029016142251!3d19.309768836550006!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85cfd9408a11434d%3A0xacf4258b2ac02088!2sAv%20Independencia%2046%20A%2C%20Centro%2C%2090000%20Tlaxcala%20de%20Xicoht%C3%A9ncatl%2C%20Tlax.!5e0!3m2!1ses-419!2smx!4v1790358492886!5m2!1ses-419!2smx" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" 
+          width="100%" 
+          height="100%" 
+          style="border:0;" 
+          allowfullscreen="" 
+          loading="lazy" 
+          referrerpolicy="no-referrer-when-downgrade"
+          class="relative z-0">
+        </iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER Y CONTACTO OCULTO -->
+  <footer class="bg-gray-900 text-gray-400 py-12 text-sm border-t border-gray-800">
+    <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+      <div>
+        <p class="font-bold text-white text-lg mb-2">Independencia 46</p>
+        <p>Av. Independencia #46, Tlaxcala Centro, Tlax.</p>
+        <p class="mt-2">contacto@independencia46.space</p>
+      </div>
+      <div class="md:text-right flex flex-col md:items-end">
+        <p class="mb-4">© 2026 Todos los derechos reservados.</p>
+        
+        <!-- Botón de Seguridad para Enlace Personal -->
+        <div id="seccion-secreta" class="inline-block bg-gray-800 p-1 rounded-lg border border-gray-700">
+          <button id="btn-revelar-web" class="text-xs text-gray-400 hover:text-white px-3 py-1.5 transition-colors">
+            Mostrar portal de consultas personales
+          </button>
+          <a id="link-secreto" href="https://muelle.xyz" target="_blank" class="hidden text-xs text-emerald-400 hover:text-emerald-300 px-3 py-1.5 font-medium transition-colors">
+            Ir a Portal de Consultas →
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL DE DETALLES DEL TALLER (Oculto por defecto) -->
+  <div id="modal-taller" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 px-4">
+    <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl transform scale-95 transition-transform duration-300" id="modal-content">
+      
+      <!-- Imagen y Botón Cerrar -->
+      <div class="relative h-48 sm:h-64 bg-gray-200">
+        <img id="m-imagen" src="" class="w-full h-full object-cover" />
+        <button id="btn-cerrar-modal" class="absolute top-4 right-4 bg-white/80 hover:bg-white text-gray-900 w-8 h-8 rounded-full flex items-center justify-center shadow backdrop-blur-sm transition-colors font-bold">
+          ✕
+        </button>
+      </div>
+
+      <div class="p-6 md:p-8">
+        <h2 id="m-titulo" class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2">Título</h2>
+        
+        <!-- Bloque Fechas -->
+        <div class="flex items-start gap-3 bg-emerald-50 text-emerald-900 p-4 rounded-xl border border-emerald-100 mb-6">
+          <svg class="w-6 h-6 shrink-0 text-emerald-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          <p id="m-fechas" class="font-medium text-sm md:text-base leading-snug"></p>
+        </div>
+
+        <p id="m-desc" class="text-gray-600 mb-8 leading-relaxed"></p>
+
+        <!-- Bloque Instructor (Biografía) -->
+        <div class="border-t border-gray-100 pt-6 mb-8 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          <img id="m-foto" src="" class="w-16 h-16 rounded-full bg-gray-100 border-2 border-emerald-100 object-cover" />
+          <div>
+            <p class="text-xs text-gray-400 uppercase tracking-wider font-bold mb-1">Imparte</p>
+            <p id="m-instructor" class="font-bold text-gray-900 text-lg"></p>
+            <p id="m-bio" class="text-sm text-gray-500 mt-1 line-clamp-3"></p>
+          </div>
+        </div>
+
+        <!-- Botón de Acción -->
+        <a id="m-wa" href="#" target="_blank" class="block w-full text-center bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl transition-colors shadow-lg shadow-emerald-200">
+          Inscribirme por WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+
+</Layout>
+
+<style>
+  /* Animación para el banner de Redes Sociales */
+  @keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+  }
+  .animate-marquee {
+    animation: marquee 20s linear infinite;
+    display: inline-block;
+    padding-left: 2rem;
+  }
+</style>
+
+<script>
+  // LÓGICA DEL MODAL
+  const modal = document.getElementById('modal-taller');
+  const modalContent = document.getElementById('modal-content');
+  const btnCerrar = document.getElementById('btn-cerrar-modal');
+  const tarjetas = document.querySelectorAll('.btn-abrir-modal');
+
+  // Elementos internos del modal a rellenar
+  const mTitulo = document.getElementById('m-titulo');
+  const mImagen = document.getElementById('m-imagen') as HTMLImageElement;
+  const mInstructor = document.getElementById('m-instructor');
+  const mBio = document.getElementById('m-bio');
+  const mFoto = document.getElementById('m-foto') as HTMLImageElement;
+  const mFechas = document.getElementById('m-fechas');
+  const mDesc = document.getElementById('m-desc');
+  const mWa = document.getElementById('m-wa') as HTMLAnchorElement;
+
+  function abrirModal(datos: any) {
+    // 1. Inyectar datos
+    if(mTitulo) mTitulo.textContent = datos.titulo;
+    if(mImagen) mImagen.src = datos.imagen;
+    if(mInstructor) mInstructor.textContent = datos.instructor;
+    if(mBio) mBio.textContent = datos.bio;
+    if(mFoto) mFoto.src = datos.fotoInstructor;
+    if(mFechas) mFechas.textContent = datos.fechas;
+    if(mDesc) mDesc.textContent = datos.desc;
+    if(mWa) mWa.href = datos.wa;
+
+    // 2. Mostrar Modal
+    modal?.classList.remove('opacity-0', 'pointer-events-none');
+    modalContent?.classList.remove('scale-95');
+    document.body.style.overflow = 'hidden'; // Evitar scroll de fondo
+  }
+
+  function cerrarModal() {
+    modal?.classList.add('opacity-0', 'pointer-events-none');
+    modalContent?.classList.add('scale-95');
+    document.body.style.overflow = 'auto'; // Recuperar scroll
+  }
+
+  // Asignar evento a todas las tarjetas
+  tarjetas.forEach(tarjeta => {
+    tarjeta.addEventListener('click', () => {
+      const datos = {
+        titulo: tarjeta.getAttribute('data-titulo'),
+        imagen: tarjeta.getAttribute('data-imagen'),
+        instructor: tarjeta.getAttribute('data-instructor'),
+        bio: tarjeta.getAttribute('data-bio'),
+        fotoInstructor: tarjeta.getAttribute('data-foto-instructor'),
+        fechas: tarjeta.getAttribute('data-fechas'),
+        desc: tarjeta.getAttribute('data-desc'),
+        wa: tarjeta.getAttribute('data-wa'),
+      };
+      abrirModal(datos);
+    });
+  });
+
+  // Cerrar al hacer clic en la "X" o fuera del modal
+  btnCerrar?.addEventListener('click', cerrarModal);
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) cerrarModal();
+  });
+
+  // LÓGICA DEL ENLACE OCULTO
+  const btnRevelar = document.getElementById('btn-revelar-web');
+  const linkSecreto = document.getElementById('link-secreto');
+
+  btnRevelar?.addEventListener('click', () => {
+    btnRevelar.classList.add('hidden');
+    linkSecreto?.classList.remove('hidden');
+  });
+</script>
