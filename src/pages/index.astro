@@ -12,7 +12,7 @@ import Layout from '../layouts/Layout.astro';
       <div class="space-x-6 text-sm font-medium text-gray-600">
         <a href="#talleres" class="hover:text-emerald-600 transition-colors">Talleres</a>
         <a href="#comunidad" class="hover:text-emerald-600 transition-colors">Comunidad</a>
-        <a href="/catalogo" class="hover:text-emerald-600 transition-colors">Catálogo P2P</a>
+        <a href="/catalogo" class="hover:text-emerald-600 transition-colors">Catálogo</a>
       </div>
     </div>
   </nav>
@@ -223,15 +223,26 @@ import Layout from '../layouts/Layout.astro';
       <div class="md:text-right flex flex-col md:items-end">
         <p class="mb-4">© 2026 Todos los derechos reservados.</p>
         
-        <!-- Botón de Seguridad para Enlace Personal -->
-        <div id="seccion-secreta" class="inline-block bg-gray-800 p-1 rounded-lg border border-gray-700">
-          <button id="btn-revelar-web" class="text-xs text-gray-400 hover:text-white px-3 py-1.5 transition-colors">
-            Mostrar portal de consultas personales
-          </button>
-          <a id="link-secreto" href="https://muelle.xyz" target="_blank" class="hidden text-xs text-emerald-400 hover:text-emerald-300 px-3 py-1.5 font-medium transition-colors">
-            Ir a Portal de Consultas →
-          </a>
-        </div>
+        <!-- Botón discreto para enlace personal -->
+<div id="seccion-secreta" class="inline-flex items-center">
+  <button
+    id="btn-revelar-web"
+    type="button"
+    aria-label="Mostrar portal de consultas personales"
+    class="p-3 -m-3 text-[10px] leading-none text-gray-700 hover:text-gray-400 focus-visible:text-gray-400 transition-colors"
+  >
+    ·
+  </button>
+  
+    id="link-secreto"
+    href="https://muelle.xyz"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="hidden text-[10px] text-gray-500 hover:text-emerald-400 transition-colors"
+  >
+    Portal →
+  </a>
+</div>
       </div>
     </div>
   </footer>
