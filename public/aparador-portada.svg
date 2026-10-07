@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" role="img" aria-labelledby="title desc">
+  <title id="title">Pieza de cerámica contemporánea en una galería luminosa</title>
+  <desc id="desc">Ilustración de una vasija de autor frente a un muro claro, con detalles terracota y violeta.</desc>
+  <defs>
+    <linearGradient id="wall" x2="0" y2="1"><stop stop-color="#fbfaf6"/><stop offset="1" stop-color="#e9e4d9"/></linearGradient>
+    <linearGradient id="floor" x2="0" y2="1"><stop stop-color="#d9d1c3"/><stop offset="1" stop-color="#bfb3a1"/></linearGradient>
+    <linearGradient id="clay" x2="1" y2="1"><stop stop-color="#d78361"/><stop offset="1" stop-color="#984632"/></linearGradient>
+    <pattern id="plaster" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="4" cy="8" r="1" fill="#6c5e4e" opacity=".06"/><circle cx="17" cy="19" r=".8" fill="#fff" opacity=".7"/></pattern>
+  </defs>
+  <rect width="1200" height="600" fill="url(#wall)"/>
+  <path d="M0 430h1200v170H0z" fill="url(#floor)"/>
+  <path d="M0 430h1200v12H0z" fill="#c9c0b2"/>
+  <path d="M772 74h250v267H772z" fill="#f0ece4" stroke="#d5cbbd" stroke-width="8"/>
+  <path d="M813 291c14-62 68-116 132-143 20 54 18 104-5 143-28 46-78 65-127 60 30-19 43-39 51-60-18 8-34 8-51 0z" fill="#70527f" opacity=".84"/>
+  <circle cx="950" cy="128" r="28" fill="#b64e35" opacity=".9"/>
+  <path d="M1022 84v257" stroke="#d5cbbd" stroke-width="8"/>
+  <ellipse cx="529" cy="493" rx="267" ry="28" fill="#594d40" opacity=".2"/>
+  <path d="M316 489h432l-38 72H354z" fill="#e6dfd3"/>
+  <path d="M354 561h360v20H354z" fill="#c9bead"/>
+  <path d="M445 486c17-41 33-78 29-126-4-48-26-75-16-125 9-45 40-70 43-119h129c3 49 34 74 43 119 10 50-12 77-16 125-4 48 12 85 29 126z" fill="url(#clay)"/>
+  <path d="M475 309c43 24 105 25 181 2M480 367c45 21 100 22 164 2" fill="none" stroke="#efb392" stroke-width="9" opacity=".75"/>
+  <path d="M501 138h145" stroke="#773a30" stroke-width="9" opacity=".65"/>
+  <path d="M500 386c43-14 89-15 138-3" stroke="#70527f" stroke-width="8" fill="none" opacity=".72"/>
+  <path d="M234 489c14-22 31-42 28-69-2-22-17-35-11-58 6-23 25-34 29-60 4-22-3-42-10-60 28 11 49 32 51 56 2 26-14 40-7 62 8 24 29 35 33 63 4 27-6 49-15 66z" fill="#78816b"/>
+  <path d="M250 380c22 12 44 15 70 7" stroke="#d8ceb9" stroke-width="6" fill="none"/>
+  <rect width="1200" height="600" fill="url(#plaster)"/>
+</svg>

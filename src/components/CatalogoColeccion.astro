@@ -1,0 +1,133 @@
+---
+interface Props {
+  tipo: 'arte' | 'mercado';
+  titulo: string;
+  descripcion: string;
+  boton: string;
+}
+
+const { tipo, titulo, descripcion, boton } = Astro.props;
+const categoriasRecova = [
+  { valor: 'todos', etiqueta: 'Todo' },
+  { valor: 'fermentos', etiqueta: 'Fermentos' },
+  { valor: 'panes_artesanales', etiqueta: 'Panes artesanales' },
+  { valor: 'semillas_granos', etiqueta: 'Semillas y granos' },
+  { valor: 'conservas_bebidas', etiqueta: 'Conservas y bebidas' },
+];
+---
+
+<section class="min-h-[70vh] bg-[#f5f2ea] py-14 md:py-20">
+  <div class="max-w-6xl mx-auto px-6">
+    <a href="/" class="text-sm font-bold text-[#a64b32] hover:underline">← Independencia 46</a>
+    <header class="max-w-3xl mt-8 mb-10">
+      <p class="text-xs font-bold uppercase tracking-[0.2em] text-[#a64b32]">Catálogo de la comunidad</p>
+      <h1 class="text-4xl md:text-5xl font-black text-[#30291f] mt-2">{titulo}</h1>
+      <p class="text-[#625747] mt-4 text-lg">{descripcion}</p>
+    </header>
+    {tipo === 'mercado' && (
+      <nav aria-label="Filtrar productos de La Recova" class="flex flex-wrap gap-2 mb-8">
+        {categoriasRecova.map((categoria, indice) => (
+          <button
+            type="button"
+            data-filtro-categoria={categoria.valor}
+            aria-pressed={indice === 0 ? 'true' : 'false'}
+            class:list={[
+              'rounded-full border px-4 py-2 text-sm font-semibold transition-colors',
+              indice === 0
+                ? 'border-[#59613f] bg-[#59613f] text-white'
+                : 'border-[#c9c0ad] bg-white text-[#463f32] hover:bg-[#ece7da]',
+            ]}
+          >
+            {categoria.etiqueta}
+          </button>
+        ))}
+      </nav>
+    )}
+    <div id="catalogo-productos" data-tipo={tipo} data-boton={boton} class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <p class="col-span-full text-center py-12 text-[#625747]">Cargando productos...</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { getProductosEnStock, getProductosPorTipo, getTalleristasActivos } from '../lib/firebase';
+
+  const entidadesHtml: Record<string, string> = {
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  };
+  const htmlSeguro = (valor = '') => String(valor).replace(/[&<>"']/g, (caracter) => entidadesHtml[caracter] || caracter);
+
+  async function cargarCatalogo() {
+    const root = document.getElementById('catalogo-productos');
+    if (!root) return;
+    const tipo = root.dataset.tipo;
+    const boton = root.dataset.boton || 'Contactar';
+    try {
+      const productosPromise = tipo === 'arte' ? getProductosEnStock() : getProductosPorTipo('mercado');
+      const [productos, talleristas] = await Promise.all([productosPromise, getTalleristasActivos()]);
+      const mapa = new Map(talleristas.map((tallerista) => [tallerista.id, tallerista]));
+      const visibles = productos.filter((producto) => tipo === 'arte'
+        ? !producto.tipo || producto.tipo === 'arte'
+        : producto.tipo === 'mercado');
+      if (!visibles.length) {
+        root.innerHTML = '<p class="col-span-full text-center py-12 text-[#625747]">Próximamente encontrarás productos de nuestra comunidad.</p>';
+        return;
+      }
+      root.innerHTML = visibles.map((producto) => {
+        const tallerista = mapa.get(producto.id_tallerista);
+        const nombre = tipo === 'mercado'
+          ? (producto.productor || 'Productor local')
+          : (tallerista?.nombre || 'Artista de Independencia 46');
+        const telefono = tipo === 'mercado'
+          ? '525632665782'
+          : String(tallerista?.whatsapp_ventas || '').replace(/\D/g, '');
+        const texto = tipo === 'mercado'
+          ? `Hola, me interesa encargar ${producto.titulo} de La Recova.`
+          : `Hola ${nombre}, me interesa tu pieza ${producto.titulo} que vi en El Aparador.`;
+        const contacto = telefono
+          ? `<a href="https://wa.me/${encodeURIComponent(telefono)}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener noreferrer" class="mt-5 block text-center bg-[#a64b32] hover:bg-[#813b2a] text-white font-bold px-4 py-3 transition-colors">${htmlSeguro(boton)}</a>`
+          : '<p class="mt-5 text-center text-sm text-gray-500">Contacto no disponible</p>';
+        return `<article data-categoria="${htmlSeguro(producto.categoria || '')}" class="catalogo-producto overflow-hidden border border-[#d5cbb8] bg-white shadow-sm flex flex-col">
+          <img src="${htmlSeguro(producto.imagen_url)}" alt="${htmlSeguro(producto.titulo)}" loading="lazy" class="w-full h-56 object-cover bg-[#e9e0cf]" />
+          <div class="p-5 flex flex-col flex-1">
+            <p class="text-xs uppercase tracking-wider font-bold text-[#7a705f]">${htmlSeguro(nombre)}</p>
+            <h2 class="text-xl font-bold text-[#30291f] mt-1">${htmlSeguro(producto.titulo)}</h2>
+            <p class="text-sm text-[#625747] mt-2">${htmlSeguro(producto.descripcion)}</p>
+            <p class="font-bold text-[#30291f] mt-4">$${Number(producto.precio || 0).toLocaleString('es-MX')} MXN</p>
+            ${contacto}
+          </div>
+        </article>`;
+      }).join('');
+
+      if (tipo === 'mercado') {
+        const botonesFiltro = document.querySelectorAll<HTMLButtonElement>('[data-filtro-categoria]');
+        botonesFiltro.forEach((botonFiltro) => {
+          botonFiltro.addEventListener('click', () => {
+            const categoriaSeleccionada = botonFiltro.dataset.filtroCategoria || 'todos';
+            botonesFiltro.forEach((otroBoton) => {
+              const seleccionado = otroBoton === botonFiltro;
+              otroBoton.setAttribute('aria-pressed', String(seleccionado));
+              otroBoton.classList.toggle('bg-[#59613f]', seleccionado);
+              otroBoton.classList.toggle('text-white', seleccionado);
+              otroBoton.classList.toggle('border-[#59613f]', seleccionado);
+              otroBoton.classList.toggle('bg-white', !seleccionado);
+              otroBoton.classList.toggle('text-[#463f32]', !seleccionado);
+              otroBoton.classList.toggle('border-[#c9c0ad]', !seleccionado);
+            });
+            root.querySelectorAll<HTMLElement>('.catalogo-producto').forEach((tarjeta) => {
+              tarjeta.classList.toggle(
+                'hidden',
+                categoriaSeleccionada !== 'todos' && tarjeta.dataset.categoria !== categoriaSeleccionada
+              );
+            });
+          });
+        });
+      }
+    } catch (error) {
+      console.error('Error cargando catálogo:', error);
+      root.innerHTML = '<p class="col-span-full text-center py-12 text-red-700">No fue posible cargar los productos. Inténtalo de nuevo más tarde.</p>';
+    }
+  }
+
+  document.addEventListener('astro:page-load', cargarCatalogo);
+</script>

@@ -33,6 +33,13 @@ export interface Tallerista {
   activo: boolean;
 }
 
+export type TipoProducto = 'arte' | 'mercado';
+export type CategoriaRecova =
+  | 'fermentos'
+  | 'panes_artesanales'
+  | 'semillas_granos'
+  | 'conservas_bebidas';
+
 export interface Producto {
   id: string;
   id_tallerista: string;
@@ -41,6 +48,9 @@ export interface Producto {
   precio: number;
   imagen_url: string; // URL alojada en Cloudinary CDN
   en_stock: boolean;
+  tipo?: TipoProducto;
+  productor?: string;
+  categoria?: CategoriaRecova;
   fecha_actualizacion: Timestamp;
 }
 
@@ -59,4 +69,12 @@ export async function getProductosEnStock(): Promise<Producto[]> {
   );
   const snapshot = await getDocs(q);
   return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Producto));
+}
+
+export async function getProductosPorTipo(tipo: TipoProducto): Promise<Producto[]> {
+  const q = query(collection(db, 'productos'), where('tipo', '==', tipo));
+  const snapshot = await getDocs(q);
+  return snapshot.docs
+    .map(doc => ({ id: doc.id, ...doc.data() } as Producto))
+    .filter(producto => producto.en_stock);
 }
