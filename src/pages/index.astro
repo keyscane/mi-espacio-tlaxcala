@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { contacto, perfilesInstagram } from '../data/instagram';
 ---
 
 <Layout title="Espacio Independencia 46 | Talleres y Cultura en Tlaxcala">
@@ -139,40 +140,50 @@ import Layout from '../layouts/Layout.astro';
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <a 
-          href="https://wa.me/TUTELEFONO?text=Hola,%20soy%20instructor%20y%20me%20gustaría%20proponer%20un%20taller." 
+          href={`https://wa.me/${contacto.whatsapp}?text=${encodeURIComponent('Hola, soy instructor y me gustaría proponer un taller.')}`}
           class="bg-[#b64e35] hover:bg-[#963f2c] text-white font-bold px-8 py-3 rounded-lg transition-colors shadow-lg flex items-center justify-center gap-2"
         >
           Proponer por WhatsApp
         </a>
-        <a 
-          href="mailto:contacto@independencia46.space?subject=Propuesta%20de%20Taller" 
+        <button
+          id="btn-mostrar-correo"
+          type="button"
+          aria-expanded="false"
+          aria-controls="correo-contacto"
           class="bg-transparent border border-[#b9a2c7] hover:bg-[#70527f]/30 text-[#e0cde9] font-bold px-8 py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
         >
-          Enviar Correo
-        </a>
+          Mostrar correo
+        </button>
+      </div>
+      <div id="correo-contacto" class="hidden mt-5 flex-col items-center justify-center gap-3 text-sm" aria-live="polite">
+        <a href={`mailto:${contacto.correo}`} class="text-[#e0cde9] underline underline-offset-4">{contacto.correo}</a>
+        <button id="btn-copiar-correo" type="button" class="rounded-md border border-[#b9a2c7]/60 px-4 py-2 text-[#eee8da] hover:bg-[#70527f]/30 transition-colors">
+          Copiar correo
+        </button>
+        <span id="estado-copiar-correo" class="text-xs text-[#eee8da]" role="status"></span>
       </div>
     </div>
 
     <!-- Banner dinámico de Redes Sociales (CSS Marquee) -->
     <div class="border-y border-[#b9a2c7]/25 py-6 bg-[#70527f]/15 flex overflow-hidden group">
-      <div class="flex space-x-12 animate-marquee whitespace-nowrap group-hover:[animation-play-state:paused]">
-        <!-- Set 1 -->
-        <span class="text-[#ddcbe7]/75 font-mono text-lg">@independencia46</span>
-        <span class="text-[#ddcbe7]/75 font-mono text-lg">•</span>
-        <span class="text-[#ddcbe7]/75 font-mono text-lg">@taller_las_noas</span>
-        <span class="text-[#ddcbe7]/75 font-mono text-lg">•</span>
-        <span class="text-[#ddcbe7]/75 font-mono text-lg">@acuarela.tlax</span>
-        <span class="text-[#ddcbe7]/75 font-mono text-lg">•</span>
-        <span class="text-[#ddcbe7]/75 font-mono text-lg">@euritmia_movimiento</span>
-        <span class="text-[#ddcbe7]/75 font-mono text-lg">•</span>
-        <!-- Duplicado para efecto infinito -->
-        <span class="text-[#ddcbe7]/75 font-mono text-lg">@independencia46</span>
-        <span class="text-[#ddcbe7]/75 font-mono text-lg">•</span>
-        <span class="text-[#ddcbe7]/75 font-mono text-lg">@taller_las_noas</span>
-        <span class="text-[#ddcbe7]/75 font-mono text-lg">•</span>
-        <span class="text-[#ddcbe7]/75 font-mono text-lg">@acuarela.tlax</span>
-        <span class="text-[#ddcbe7]/75 font-mono text-lg">•</span>
-        <span class="text-[#ddcbe7]/75 font-mono text-lg">@euritmia_movimiento</span>
+      <div class="flex w-max animate-marquee whitespace-nowrap group-hover:[animation-play-state:paused]">
+        {[0, 1].map((copia) => (
+          <div class="flex shrink-0 items-center gap-12 pr-12" aria-hidden={copia === 1 ? 'true' : undefined}>
+            {perfilesInstagram.map((perfil, indice) => (
+              <>
+                <a
+                  href={perfil.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-[#ddcbe7]/75 font-mono text-lg hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                  aria-label={`Abrir Instagram de @${perfil.usuario} en una pestaña nueva`}
+                  tabindex={copia === 1 ? -1 : undefined}
+                >@{perfil.usuario}</a>
+                {indice < perfilesInstagram.length - 1 && <span class="text-[#ddcbe7]/75" aria-hidden="true">•</span>}
+              </>
+            ))}
+          </div>
+        ))}
       </div>
     </div>
   </section>
@@ -311,11 +322,6 @@ import Layout from '../layouts/Layout.astro';
   }
   .animate-marquee {
     animation: marquee 20s linear infinite;
-    display: inline-block;
-    padding-left: 2rem;
-  }
-  .animate-marquee > span {
-    color: #ddcbe7;
   }
 </style>
 
@@ -575,6 +581,28 @@ import Layout from '../layouts/Layout.astro';
     btnRevelar.classList.add('hidden');
 
     linkSecreto?.classList.remove('hidden');
+  });
+
+  const btnMostrarCorreo = document.getElementById('btn-mostrar-correo');
+  const correoContacto = document.getElementById('correo-contacto');
+  const btnCopiarCorreo = document.getElementById('btn-copiar-correo');
+  const estadoCopiarCorreo = document.getElementById('estado-copiar-correo');
+
+  btnMostrarCorreo?.addEventListener('click', () => {
+    const mostrar = btnMostrarCorreo.getAttribute('aria-expanded') !== 'true';
+    btnMostrarCorreo.setAttribute('aria-expanded', String(mostrar));
+    correoContacto?.classList.toggle('hidden', !mostrar);
+    correoContacto?.classList.toggle('flex', mostrar);
+    btnMostrarCorreo.textContent = mostrar ? 'Ocultar correo' : 'Mostrar correo';
+  });
+
+  btnCopiarCorreo?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(contacto.correo);
+      if (estadoCopiarCorreo) estadoCopiarCorreo.textContent = 'Correo copiado.';
+    } catch {
+      if (estadoCopiarCorreo) estadoCopiarCorreo.textContent = 'Selecciona y copia la dirección de correo mostrada.';
+    }
   });
 
 
