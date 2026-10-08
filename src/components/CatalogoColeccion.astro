@@ -16,7 +16,12 @@ const categoriasRecova = [
 ];
 ---
 
-<section class="min-h-[70vh] bg-[#f5f2ea] py-14 md:py-20">
+<section
+  class="min-h-[70vh] bg-[#f5f2ea] py-14 md:py-20"
+  style={tipo === 'mercado'
+    ? "background-image: linear-gradient(rgba(245, 242, 234, 0.78), rgba(245, 242, 234, 0.88)), url('/recova-fondo.jpg'); background-size: cover; background-position: center 58%;"
+    : undefined}
+>
   <div class="max-w-6xl mx-auto px-6">
     <a href="/" class="text-sm font-bold text-[#a64b32] hover:underline">← Independencia 46</a>
     <header class="max-w-3xl mt-8 mb-10">
