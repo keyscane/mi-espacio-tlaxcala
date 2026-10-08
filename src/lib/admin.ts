@@ -87,6 +87,19 @@ export async function actualizarTipoProducto(idProducto: string, tipo: TipoProdu
   await updateDoc(ref, { tipo });
 }
 
+export async function actualizarProducto(idProducto: string, producto: {
+  titulo: string;
+  descripcion: string;
+  precio: number;
+  imagen_url: string;
+  tipo: TipoProducto;
+  productor?: string;
+  categoria?: CategoriaRecova;
+}) {
+  const ref = doc(db, 'productos', idProducto);
+  await updateDoc(ref, { ...producto, fecha_actualizacion: Timestamp.now() });
+}
+
 // Comprueba el marcador de rol administradores/{uid} para mostrar la gestión exclusiva de La Recova.
 export async function esAdministrador(uid: string): Promise<boolean> {
   const snapshot = await getDoc(doc(db, 'administradores', uid));
@@ -154,4 +167,14 @@ export async function crearTaller(taller: {
 export async function eliminarTaller(idTaller: string) {
   const ref = doc(db, 'talleres', idTaller);
   await deleteDoc(ref);
+}
+
+export async function actualizarTaller(idTaller: string, taller: {
+  titulo: string;
+  descripcion: string;
+  fechas_horario: string;
+  imagen_url: string;
+}) {
+  const ref = doc(db, 'talleres', idTaller);
+  await updateDoc(ref, taller);
 }
