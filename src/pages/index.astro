@@ -175,7 +175,7 @@ import { contacto, perfilesInstagram } from '../data/instagram';
                   href={perfil.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-[#ddcbe7]/75 font-mono text-lg hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                  class="text-[#ddcbe7]/75 font-mono text-lg hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
                   aria-label={`Abrir Instagram de @${perfil.usuario} en una pestaña nueva`}
                   tabindex={copia === 1 ? -1 : undefined}
                 >@{perfil.usuario}</a>
@@ -597,8 +597,14 @@ import { contacto, perfilesInstagram } from '../data/instagram';
   });
 
   btnCopiarCorreo?.addEventListener('click', async () => {
+    const correo = correoContacto?.querySelector('a[href^="mailto:"]')?.textContent?.trim();
+    if (!correo) {
+      if (estadoCopiarCorreo) estadoCopiarCorreo.textContent = 'No se encontró la dirección de correo.';
+      return;
+    }
+
     try {
-      await navigator.clipboard.writeText(contacto.correo);
+      await navigator.clipboard.writeText(correo);
       if (estadoCopiarCorreo) estadoCopiarCorreo.textContent = 'Correo copiado.';
     } catch {
       if (estadoCopiarCorreo) estadoCopiarCorreo.textContent = 'Selecciona y copia la dirección de correo mostrada.';
