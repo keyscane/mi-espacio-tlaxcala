@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://independencia46.space/sitemap.xml
